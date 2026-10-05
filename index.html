@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modello rilievo APE</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --ink:#1d1d1b; --muted:#6b6a65; --line:#dcdad3; --accent:#2f5d50; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.4 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
+  header { position:sticky; top:0; z-index:5; background:var(--accent); color:#fff; padding:10px 16px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; flex:1 1 200px; font-weight:600; }
+  header button { background:#fff; color:var(--accent); border:0; border-radius:6px; padding:8px 12px; font-size:14px; font-weight:600; cursor:pointer; }
+  main { max-width:900px; margin:0 auto; padding:12px 16px 60px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:14px 0; }
+  h2 { font-size:17px; margin:0 0 8px; color:var(--accent); }
+  h3 { font-size:14px; margin:12px 0 4px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  table { width:100%; border-collapse:collapse; margin-bottom:6px; }
+  th, td { text-align:left; padding:5px 4px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  th { font-size:13px; color:var(--muted); font-weight:600; }
+  td.l { width:38%; }
+  .kv td.l { font-weight:500; }
+  input[type=text], input[type=date], select, textarea { width:100%; min-width:0; font:inherit; padding:7px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; color:inherit; }
+  td .cell { display:flex; gap:6px; }
+  textarea { min-height:110px; }
+  .add { background:none; border:1px dashed var(--accent); color:var(--accent); border-radius:6px; padding:6px 10px; font-size:14px; cursor:pointer; margin-top:2px; }
+  .status { font-size:12px; opacity:.85; }
+  .scroll { overflow-x:auto; }
+  #panel { position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(0,0,0,.5); z-index:20; display:flex; align-items:center; justify-content:center; padding:12px; }
+  #panel[hidden] { display:none; }
+  .sheet { background:#fff; border-radius:10px; padding:12px; width:100%; max-width:640px; max-height:92vh; display:flex; flex-direction:column; gap:8px; }
+  #box { flex:1; min-height:50vh; font-size:14px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .row button { background:var(--accent); color:#fff; border:0; border-radius:6px; padding:9px 14px; font-size:15px; font-weight:600; }
+  .row button[hidden] { display:none; }
+  header .status { color:#fff; }
+  @media (max-width:560px) {
+    td.l { width:30%; font-size:14px; } th, td { padding:5px 2px; }
+    table[data-t="inf"], table[data-t="rad"] { min-width:640px; }
+  }
+  @media print {
+    header, .add, #panel { display:none; }
+    body { background:#fff; font-size:12px; }
+    main { padding:0; max-width:none; }
+    section { break-inside:avoid; border:1px solid #bbb; margin:8px 0; }
+    input, select, textarea { border:0; padding:0; appearance:none; -webkit-appearance:none; background:none; }
+    textarea { min-height:60px; }
+    table[data-t="inf"], table[data-t="rad"] { min-width:0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Modello rilievo APE</h1>
+  <span class="status" id="status"></span>
+  <button id="btnSum" type="button">Riepilogo</button>
+  <button id="btnPdf" type="button">Crea PDF</button>
+  <button id="btnNew" type="button">Nuovo intervento</button>
+</header>
+<main>
+<section><h2>Immobile</h2><table data-t="imm" class="kv"><tbody><tr><td class="l">Indirizzo</td><td><div class="cell"><input type="text" data-k="imm.0.0"></div></td></tr><tr><td class="l">Cliente</td><td><div class="cell"><input type="text" data-k="imm.1.0"></div></td></tr><tr><td class="l">Data del sopralluogo</td><td><div class="cell"><input type="date" data-k="imm.2.0"></div></td></tr><tr><td class="l">Rilevatore</td><td><div class="cell"><input type="text" data-k="imm.3.0"></div></td></tr><tr><td class="l">Foglio, particella, subalterno</td><td><div class="cell"><input type="text" data-k="imm.4.0"></div></td></tr><tr><td class="l">Anno di costruzione</td><td><div class="cell"><input type="text" data-k="imm.5.0"></div></td></tr><tr><td class="l">Piano</td><td><div class="cell"><select data-k="imm.6.0"><option value="">Scegli</option><option value="Interrato">Interrato</option><option value="Terra">Terra</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="Oltre il 6">Oltre il 6</option></select></div></td></tr><tr><td class="l">Orientamento</td><td><div class="cell"><select data-k="imm.7.0"><option value="">Scegli</option><option value="Nord">Nord</option><option value="Nord-Est">Nord-Est</option><option value="Est">Est</option><option value="Sud-Est">Sud-Est</option><option value="Sud">Sud</option><option value="Sud-Ovest">Sud-Ovest</option><option value="Ovest">Ovest</option><option value="Nord-Ovest">Nord-Ovest</option></select></div></td></tr><tr><td class="l">Ubicazione</td><td><div class="cell"><select data-k="imm.8.0"><option value="">Scegli</option><option value="Centro storico">Centro storico</option><option value="Periferia">Periferia</option><option value="Campagna">Campagna</option></select></div></td></tr><tr><td class="l">Interventi già eseguiti (e data)</td><td><div class="cell"><select data-k="imm.9.0"><option value="">Scegli</option><option value="Sì">Sì</option><option value="No">No</option></select><input type="text" data-k="imm.9.1" placeholder="data o dettagli"></div></td></tr><tr><td class="l">Locali riscaldati e raffrescati</td><td><div class="cell"><input type="text" data-k="imm.10.0"></div></td></tr><tr><td class="l">Foto del fabbricato dalla strada</td><td><div class="cell"><select data-k="imm.11.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr></tbody></table></section><section><h2>Involucro</h2><h3>Pareti</h3><table data-t="par"><thead><tr><th>Parete</th><th>Confina con</th><th>Spessore e tipologia</th></tr></thead><tbody><tr><td class="l">Parete 1</td><td><div class="cell"><select data-k="par.0.0.0"><option value="">Scegli</option><option value="Esterno">Esterno</option><option value="Vano scala">Vano scala</option><option value="Interno">Interno</option></select></div></td><td><div class="cell"><input type="text" data-k="par.0.1.0"></div></td></tr><tr><td class="l">Parete 2</td><td><div class="cell"><select data-k="par.1.0.0"><option value="">Scegli</option><option value="Esterno">Esterno</option><option value="Vano scala">Vano scala</option><option value="Interno">Interno</option></select></div></td><td><div class="cell"><input type="text" data-k="par.1.1.0"></div></td></tr><tr><td class="l">Parete 3</td><td><div class="cell"><select data-k="par.2.0.0"><option value="">Scegli</option><option value="Esterno">Esterno</option><option value="Vano scala">Vano scala</option><option value="Interno">Interno</option></select></div></td><td><div class="cell"><input type="text" data-k="par.2.1.0"></div></td></tr><tr><td class="l">Parete 4</td><td><div class="cell"><select data-k="par.3.0.0"><option value="">Scegli</option><option value="Esterno">Esterno</option><option value="Vano scala">Vano scala</option><option value="Interno">Interno</option></select></div></td><td><div class="cell"><input type="text" data-k="par.3.1.0"></div></td></tr></tbody></table><button type="button" class="add" data-add="par" data-n="4">Aggiungi riga</button><h3>Solai</h3><table data-t="sol"><thead><tr><th>Solaio</th><th>Tipologia</th><th>Confina con</th></tr></thead><tbody><tr><td class="l">Sopra</td><td><div class="cell"><select data-k="sol.0.0.0"><option value="">Scegli</option><option value="Laterocemento">Laterocemento</option><option value="Legno">Legno</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><select data-k="sol.0.1.0"><option value="">Scegli</option><option value="Esterno">Esterno</option><option value="Terreno">Terreno</option><option value="Ambiente non riscaldato">Ambiente non riscaldato</option><option value="Non disperdente">Non disperdente</option></select></div></td></tr><tr><td class="l">Sotto</td><td><div class="cell"><select data-k="sol.1.0.0"><option value="">Scegli</option><option value="Laterocemento">Laterocemento</option><option value="Legno">Legno</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><select data-k="sol.1.1.0"><option value="">Scegli</option><option value="Esterno">Esterno</option><option value="Terreno">Terreno</option><option value="Ambiente non riscaldato">Ambiente non riscaldato</option><option value="Non disperdente">Non disperdente</option></select></div></td></tr></tbody></table><h3>Altro</h3><table data-t="alt" class="kv"><tbody><tr><td class="l">Finitura e colore esterno</td><td><div class="cell"><input type="text" data-k="alt.0.0"></div></td></tr><tr><td class="l">Ponti termici presenti, e dove</td><td><div class="cell"><select data-k="alt.1.0"><option value="">Scegli</option><option value="Sì">Sì</option><option value="No">No</option></select><input type="text" data-k="alt.1.1" placeholder="dove"></div></td></tr></tbody></table></section><section><h2>Serramenti</h2><div class="scroll"><table data-t="inf"><thead><tr><th>Infisso</th><th>Ambiente</th><th>Tipologia</th><th>Ante</th><th>Vetri</th><th>Foto</th></tr></thead><tbody><tr><td class="l">Infisso 1</td><td><div class="cell"><input type="text" data-k="inf.0.0.0" placeholder="ambiente"></div></td><td><div class="cell"><select data-k="inf.0.1.0"><option value="">Scegli</option><option value="PVC">PVC</option><option value="Metallo">Metallo</option><option value="Legno">Legno</option></select></div></td><td><div class="cell"><input type="text" data-k="inf.0.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="inf.0.3.0"><option value="">Scegli</option><option value="Singolo">Singolo</option><option value="Doppio">Doppio</option><option value="Triplo">Triplo</option></select></div></td><td><div class="cell"><select data-k="inf.0.4.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Infisso 2</td><td><div class="cell"><input type="text" data-k="inf.1.0.0" placeholder="ambiente"></div></td><td><div class="cell"><select data-k="inf.1.1.0"><option value="">Scegli</option><option value="PVC">PVC</option><option value="Metallo">Metallo</option><option value="Legno">Legno</option></select></div></td><td><div class="cell"><input type="text" data-k="inf.1.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="inf.1.3.0"><option value="">Scegli</option><option value="Singolo">Singolo</option><option value="Doppio">Doppio</option><option value="Triplo">Triplo</option></select></div></td><td><div class="cell"><select data-k="inf.1.4.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Infisso 3</td><td><div class="cell"><input type="text" data-k="inf.2.0.0" placeholder="ambiente"></div></td><td><div class="cell"><select data-k="inf.2.1.0"><option value="">Scegli</option><option value="PVC">PVC</option><option value="Metallo">Metallo</option><option value="Legno">Legno</option></select></div></td><td><div class="cell"><input type="text" data-k="inf.2.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="inf.2.3.0"><option value="">Scegli</option><option value="Singolo">Singolo</option><option value="Doppio">Doppio</option><option value="Triplo">Triplo</option></select></div></td><td><div class="cell"><select data-k="inf.2.4.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Infisso 4</td><td><div class="cell"><input type="text" data-k="inf.3.0.0" placeholder="ambiente"></div></td><td><div class="cell"><select data-k="inf.3.1.0"><option value="">Scegli</option><option value="PVC">PVC</option><option value="Metallo">Metallo</option><option value="Legno">Legno</option></select></div></td><td><div class="cell"><input type="text" data-k="inf.3.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="inf.3.3.0"><option value="">Scegli</option><option value="Singolo">Singolo</option><option value="Doppio">Doppio</option><option value="Triplo">Triplo</option></select></div></td><td><div class="cell"><select data-k="inf.3.4.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Infisso 5</td><td><div class="cell"><input type="text" data-k="inf.4.0.0" placeholder="ambiente"></div></td><td><div class="cell"><select data-k="inf.4.1.0"><option value="">Scegli</option><option value="PVC">PVC</option><option value="Metallo">Metallo</option><option value="Legno">Legno</option></select></div></td><td><div class="cell"><input type="text" data-k="inf.4.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="inf.4.3.0"><option value="">Scegli</option><option value="Singolo">Singolo</option><option value="Doppio">Doppio</option><option value="Triplo">Triplo</option></select></div></td><td><div class="cell"><select data-k="inf.4.4.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Infisso 6</td><td><div class="cell"><input type="text" data-k="inf.5.0.0" placeholder="ambiente"></div></td><td><div class="cell"><select data-k="inf.5.1.0"><option value="">Scegli</option><option value="PVC">PVC</option><option value="Metallo">Metallo</option><option value="Legno">Legno</option></select></div></td><td><div class="cell"><input type="text" data-k="inf.5.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="inf.5.3.0"><option value="">Scegli</option><option value="Singolo">Singolo</option><option value="Doppio">Doppio</option><option value="Triplo">Triplo</option></select></div></td><td><div class="cell"><select data-k="inf.5.4.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr></tbody></table></div><button type="button" class="add" data-add="inf" data-n="6">Aggiungi riga</button></section><section><h2>Impianti</h2><table data-t="imp"><thead><tr><th>Impianto</th><th>Marca, modello e potenza</th><th>Foto targa</th></tr></thead><tbody><tr><td class="l">Riscaldamento</td><td><div class="cell"><input type="text" data-k="imp.0.0.0"></div></td><td><div class="cell"><select data-k="imp.0.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Acqua calda sanitaria (boiler o caldaia)</td><td><div class="cell"><input type="text" data-k="imp.1.0.0"></div></td><td><div class="cell"><select data-k="imp.1.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Condizionatore o pompa di calore 1 (unità esterna)</td><td><div class="cell"><input type="text" data-k="imp.2.0.0"></div></td><td><div class="cell"><select data-k="imp.2.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Condizionatore o pompa di calore 2 (unità esterna)</td><td><div class="cell"><input type="text" data-k="imp.3.0.0"></div></td><td><div class="cell"><select data-k="imp.3.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Condizionatore o pompa di calore 3 (unità esterna)</td><td><div class="cell"><input type="text" data-k="imp.4.0.0"></div></td><td><div class="cell"><select data-k="imp.4.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr></tbody></table><table data-t="imp2" class="kv"><tbody><tr><td class="l">Termostato presente</td><td><div class="cell"><select data-k="imp2.0.0"><option value="">Scegli</option><option value="Sì">Sì</option><option value="No">No</option></select></div></td></tr><tr><td class="l">Tipo di regolazione</td><td><div class="cell"><input type="text" data-k="imp2.1.0"></div></td></tr><tr><td class="l">Ventilazione</td><td><div class="cell"><select data-k="imp2.2.0"><option value="">Scegli</option><option value="Naturale">Naturale</option><option value="Meccanizzata">Meccanizzata</option></select></div></td></tr><tr><td class="l">Impianti da fonti rinnovabili</td><td><div class="cell"><select data-k="imp2.3.0"><option value="">Scegli</option><option value="Sì">Sì</option><option value="No">No</option></select><input type="text" data-k="imp2.3.1" placeholder="dati"></div></td></tr></tbody></table></section><section><h2>Radiatori</h2><div class="scroll"><table data-t="rad"><thead><tr><th>Stanza</th><th>Nome</th><th>Tipo di radiatore</th><th>Numero</th><th>Foto</th></tr></thead><tbody><tr><td class="l">Stanza 1</td><td><div class="cell"><input type="text" data-k="rad.0.0.0" placeholder="nome"></div></td><td><div class="cell"><select data-k="rad.0.1.0"><option value="">Scegli</option><option value="Ghisa">Ghisa</option><option value="Alluminio">Alluminio</option><option value="Acciaio">Acciaio</option><option value="Pavimento radiante">Pavimento radiante</option><option value="Ventilconvettore">Ventilconvettore</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><input type="text" data-k="rad.0.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="rad.0.3.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Stanza 2</td><td><div class="cell"><input type="text" data-k="rad.1.0.0" placeholder="nome"></div></td><td><div class="cell"><select data-k="rad.1.1.0"><option value="">Scegli</option><option value="Ghisa">Ghisa</option><option value="Alluminio">Alluminio</option><option value="Acciaio">Acciaio</option><option value="Pavimento radiante">Pavimento radiante</option><option value="Ventilconvettore">Ventilconvettore</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><input type="text" data-k="rad.1.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="rad.1.3.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Stanza 3</td><td><div class="cell"><input type="text" data-k="rad.2.0.0" placeholder="nome"></div></td><td><div class="cell"><select data-k="rad.2.1.0"><option value="">Scegli</option><option value="Ghisa">Ghisa</option><option value="Alluminio">Alluminio</option><option value="Acciaio">Acciaio</option><option value="Pavimento radiante">Pavimento radiante</option><option value="Ventilconvettore">Ventilconvettore</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><input type="text" data-k="rad.2.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="rad.2.3.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Stanza 4</td><td><div class="cell"><input type="text" data-k="rad.3.0.0" placeholder="nome"></div></td><td><div class="cell"><select data-k="rad.3.1.0"><option value="">Scegli</option><option value="Ghisa">Ghisa</option><option value="Alluminio">Alluminio</option><option value="Acciaio">Acciaio</option><option value="Pavimento radiante">Pavimento radiante</option><option value="Ventilconvettore">Ventilconvettore</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><input type="text" data-k="rad.3.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="rad.3.3.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Stanza 5</td><td><div class="cell"><input type="text" data-k="rad.4.0.0" placeholder="nome"></div></td><td><div class="cell"><select data-k="rad.4.1.0"><option value="">Scegli</option><option value="Ghisa">Ghisa</option><option value="Alluminio">Alluminio</option><option value="Acciaio">Acciaio</option><option value="Pavimento radiante">Pavimento radiante</option><option value="Ventilconvettore">Ventilconvettore</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><input type="text" data-k="rad.4.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="rad.4.3.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Stanza 6</td><td><div class="cell"><input type="text" data-k="rad.5.0.0" placeholder="nome"></div></td><td><div class="cell"><select data-k="rad.5.1.0"><option value="">Scegli</option><option value="Ghisa">Ghisa</option><option value="Alluminio">Alluminio</option><option value="Acciaio">Acciaio</option><option value="Pavimento radiante">Pavimento radiante</option><option value="Ventilconvettore">Ventilconvettore</option><option value="Altro">Altro</option></select></div></td><td><div class="cell"><input type="text" data-k="rad.5.2.0" placeholder="n."></div></td><td><div class="cell"><select data-k="rad.5.3.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr></tbody></table></div><button type="button" class="add" data-add="rad" data-n="6">Aggiungi riga</button></section><section><h2>Impianto condominiale</h2><table data-t="con" class="kv"><tbody><tr><td class="l">Impianto centralizzato</td><td><div class="cell"><select data-k="con.0.0"><option value="">Scegli</option><option value="Sì">Sì</option><option value="No">No</option></select></div></td></tr><tr><td class="l">Foto della targa del condominio con i dati dell'amministratore</td><td><div class="cell"><select data-k="con.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Amministratore: nome e recapiti</td><td><div class="cell"><input type="text" data-k="con.2.0"></div></td></tr><tr><td class="l">Generatore centrale: marca, modello e potenza</td><td><div class="cell"><input type="text" data-k="con.3.0"></div></td></tr></tbody></table></section><section><h2>Misure, foto e documenti</h2><table data-t="mis" class="kv"><tbody><tr><td class="l">Misure di tutto l'appartamento (vani, finestre, muri, altezze)</td><td><div class="cell"><select data-k="mis.0.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Foto di termosifoni, infissi, caldaie, boiler e altri impianti</td><td><div class="cell"><select data-k="mis.1.0"><option value="">Scegli</option><option value="Fatto">Fatto</option><option value="Non possibile">Non possibile</option></select></div></td></tr><tr><td class="l">Dal proprietario: stratigrafie, certificati dei materiali, schemi impianti</td><td><div class="cell"><select data-k="mis.2.0"><option value="">Scegli</option><option value="Ricevuti">Ricevuti</option><option value="Non esistono">Non esistono</option></select></div></td></tr><tr><td class="l">Lettera informativa e lettera di incarico firmate</td><td><div class="cell"><select data-k="mis.3.0"><option value="">Scegli</option><option value="Sì">Sì</option><option value="No">No</option></select></div></td></tr></tbody></table></section><section><h2>Note del sopralluogo</h2><textarea data-k="note"></textarea></section>
+</main>
+<div id="panel" hidden><div class="sheet"><textarea id="box" readonly></textarea><div class="row"><button type="button" id="btnCopy">Copia</button><button type="button" id="btnShare">Condividi</button><button type="button" id="btnClose">Chiudi</button><span id="pmsg" class="status"></span></div></div></div>
+<script>
+(function () {
+  var STORE = "rilievo-ape-v1";
+  var state = { v: {}, n: {} };
+  try { var raw = localStorage.getItem(STORE); if (raw) state = JSON.parse(raw); } catch (e) {}
+  state.v = state.v || {}; state.n = state.n || {};
+  var statusEl = document.getElementById("status");
+
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(state)); statusEl.textContent = "Salvato"; }
+    catch (e) { statusEl.textContent = ""; }
+  }
+
+  function addRow(table, btn, withSave) {
+    var tb = table.tBodies[0];
+    var last = tb.rows[tb.rows.length - 1];
+    var idx = tb.rows.length;
+    var clone = last.cloneNode(true);
+    var id = table.getAttribute("data-t");
+    clone.cells[0].textContent = clone.cells[0].textContent.replace(/\d+$/, String(idx + 1));
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-k]"), function (el) {
+      var parts = el.getAttribute("data-k").split(".");
+      parts[1] = String(idx);
+      el.setAttribute("data-k", parts.join("."));
+      el.value = "";
+    });
+    tb.appendChild(clone);
+    if (withSave) { state.n[id] = idx + 1; save(); }
+  }
+
+  // Ripristina righe aggiunte e valori salvati.
+  Array.prototype.forEach.call(document.querySelectorAll(".add"), function (btn) {
+    var id = btn.getAttribute("data-add");
+    var table = document.querySelector('table[data-t="' + id + '"]');
+    var total = state.n[id] || 0;
+    while (table.tBodies[0].rows.length < total) addRow(table, btn, false);
+    btn.addEventListener("click", function () { addRow(table, btn, true); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-k]"), function (el) {
+    var k = el.getAttribute("data-k");
+    if (state.v[k] !== undefined) el.value = state.v[k];
+  });
+
+  document.addEventListener("input", function (e) {
+    var k = e.target && e.target.getAttribute && e.target.getAttribute("data-k");
+    if (!k) return;
+    state.v[k] = e.target.value; save();
+  });
+
+  var panel = document.getElementById("panel");
+  var box = document.getElementById("box");
+  var pmsg = document.getElementById("pmsg");
+  var btnNew = document.getElementById("btnNew");
+  var hintTimer;
+
+  function hint(msg) {
+    statusEl.textContent = msg; pmsg.textContent = msg;
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () { statusEl.textContent = ""; pmsg.textContent = ""; }, 7000);
+  }
+
+  function summary() {
+    var out = [];
+    Array.prototype.forEach.call(document.querySelectorAll("main section"), function (sec) {
+      var lines = [];
+      Array.prototype.forEach.call(sec.querySelectorAll("table"), function (table) {
+        var head = table.tHead ? Array.prototype.map.call(table.tHead.rows[0].cells, function (c) { return c.textContent; }) : null;
+        Array.prototype.forEach.call(table.tBodies[0].rows, function (tr) {
+          var parts = [];
+          for (var i = 1; i < tr.cells.length; i++) {
+            var vals = [];
+            Array.prototype.forEach.call(tr.cells[i].querySelectorAll("[data-k]"), function (el) { if (el.value) vals.push(el.value); });
+            if (vals.length) parts.push((head && head[i] ? head[i] + ": " : "") + vals.join(", "));
+          }
+          if (parts.length) lines.push(tr.cells[0].textContent + ": " + parts.join("; "));
+        });
+      });
+      var ta = sec.querySelector("textarea");
+      if (ta && ta.value) lines.push(ta.value);
+      if (lines.length) out.push(sec.querySelector("h2").textContent + "\n" + lines.join("\n"));
+    });
+    return "Rilievo APE\n\n" + (out.join("\n\n") || "Nessun dato compilato.");
+  }
+
+  function openPanel() { box.value = summary(); panel.hidden = false; box.focus(); box.select(); }
+
+  document.getElementById("btnSum").addEventListener("click", openPanel);
+  document.getElementById("btnClose").addEventListener("click", function () { panel.hidden = true; });
+
+  function copyFallback() {
+    box.focus(); box.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    hint(ok ? "Copiato" : "Tieni premuto sul testo e scegli Copia");
+  }
+  document.getElementById("btnCopy").addEventListener("click", function () {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(box.value).then(function () { hint("Copiato"); }, copyFallback);
+      } else { copyFallback(); }
+    } catch (e) { copyFallback(); }
+  });
+
+  var btnShare = document.getElementById("btnShare");
+  if (navigator.share) {
+    btnShare.addEventListener("click", function () {
+      try { navigator.share({ title: "Rilievo APE", text: box.value }).catch(function () {}); }
+      catch (e) { hint("Condivisione non disponibile, usa Copia"); }
+    });
+  } else { btnShare.hidden = true; }
+
+  document.getElementById("btnPdf").addEventListener("click", function () {
+    hint("Se la stampa non si apre, usa Riepilogo, oppure apri il file in Safari o Chrome");
+    try { window.print(); } catch (e) {}
+  });
+
+  var armed = false, armTimer;
+  function disarm() { armed = false; btnNew.textContent = "Nuovo intervento"; clearTimeout(armTimer); }
+  function resetAll() {
+    state = { v: {}, n: {} };
+    try { localStorage.removeItem(STORE); } catch (e) {}
+    Array.prototype.forEach.call(document.querySelectorAll(".add"), function (btn) {
+      var table = document.querySelector('table[data-t="' + btn.getAttribute("data-add") + '"]');
+      var keep = parseInt(btn.getAttribute("data-n"), 10);
+      while (table.tBodies[0].rows.length > keep) table.tBodies[0].deleteRow(-1);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-k]"), function (el) { el.value = ""; });
+    window.scrollTo(0, 0);
+    hint("Campi svuotati");
+  }
+  btnNew.addEventListener("click", function () {
+    if (!armed) {
+      armed = true; btnNew.textContent = "Tocca ancora per svuotare";
+      armTimer = setTimeout(disarm, 4000);
+      return;
+    }
+    disarm(); resetAll();
+  });
+})();
+</script>
+</body>
+</html>
